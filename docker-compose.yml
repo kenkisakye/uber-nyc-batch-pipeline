@@ -1,0 +1,36 @@
+# Quarterly Uber pickup demand pipeline.
+# Build status: storage layer (SeaweedFS).  Ingestion, PySpark and the
+# scheduler are added in the next steps.
+
+name: ${COMPOSE_PROJECT_NAME:-uber-pipeline}
+
+# Settings shared by every service
+x-common: &common
+  networks: [pipeline-net]
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options: {max-size: "10m", max-file: "3"}
+
+x-seaweedfs: &seaweedfs
+  <<: *common
+  image: ${SEAWEEDFS_IMAGE:-chrislusf/seaweedfs:4.17}
+  entrypoint: ["weed"]
+
+services:
+  master:
+    <<: *seaweedfs
+    hostname: master
+    # 001 = keep one extra copy on a different volume server
+    command: >-
+      master -ip=master -ip.bind=0.0.0.0 -port=9333 -mdir=/data
+      -defaultReplication=001 -volumeSizeLimitMB=256
+    ports: ["127.0.0.1:9333:9333"]
+    volumes: [master-data:/data]
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:9333/cluster/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
