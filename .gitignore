@@ -1,0 +1,16 @@
+# Secrets and local settings
+.env
+
+# Source data comes from Kaggle and is never committed
+data/*
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Editors and OS
+.DS_Store
+.vscode/
+.idea/
