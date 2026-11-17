@@ -90,3 +90,64 @@ services:
       retries: 10
       start_period: 20s
 
+
+  s3:
+    <<: *seaweedfs
+    hostname: s3
+    entrypoint: ["/bin/sh", "/scripts/s3-start.sh"]
+    environment: &s3-keys
+      S3_ADMIN_ACCESS_KEY: ${S3_ADMIN_ACCESS_KEY}
+      S3_ADMIN_SECRET_KEY: ${S3_ADMIN_SECRET_KEY}
+      S3_INGEST_ACCESS_KEY: ${S3_INGEST_ACCESS_KEY}
+      S3_INGEST_SECRET_KEY: ${S3_INGEST_SECRET_KEY}
+      S3_SPARK_ACCESS_KEY: ${S3_SPARK_ACCESS_KEY}
+      S3_SPARK_SECRET_KEY: ${S3_SPARK_SECRET_KEY}
+      S3_APP_ACCESS_KEY: ${S3_APP_ACCESS_KEY}
+      S3_APP_SECRET_KEY: ${S3_APP_SECRET_KEY}
+    volumes: ["./storage/s3-start.sh:/scripts/s3-start.sh:ro"]
+    # Published on this machine only, for the forecasting application
+    ports: ["127.0.0.1:8333:8333"]
+    mem_limit: 256m
+    depends_on:
+      filer: {condition: service_healthy}
+    healthcheck:
+      # Any HTTP answer (including 403) means the gateway is up
+      test: ["CMD-SHELL", "wget -S -O /dev/null http://127.0.0.1:8333/ 2>&1 | grep -q 'HTTP/'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  # Runs once: creates the buckets, then exits
+  storage-init:
+    <<: *seaweedfs
+    entrypoint: ["/bin/sh", "/scripts/init-buckets.sh"]
+    volumes: ["./storage/init-buckets.sh:/scripts/init-buckets.sh:ro"]
+    restart: "no"
+    depends_on:
+      filer: {condition: service_healthy}
+
+  # On demand: verifies that each S3 identity has exactly its intended access
+  access-check:
+    <<: *common
+    profiles: [check]
+    image: ${PYTHON_IMAGE:-python:3.11-slim-bookworm}
+    restart: "no"
+    environment:
+      <<: *s3-keys
+      S3_ENDPOINT: http://s3:8333
+    volumes: ["./tools/check_access.py:/tools/check_access.py:ro"]
+    command: ["sh", "-c", "pip install --quiet --disable-pip-version-check boto3==1.35.* && python /tools/check_access.py"]
+    depends_on:
+      s3: {condition: service_healthy}
+      storage-init: {condition: service_completed_successfully}
+
+networks:
+  pipeline-net:
+    driver: bridge
+
+volumes:
+  master-data:
+  volume1-data:
+  volume2-data:
+  filer-data:
