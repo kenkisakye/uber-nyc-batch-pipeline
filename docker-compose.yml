@@ -34,3 +34,20 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
+
+  volume1:
+    <<: *seaweedfs
+    hostname: volume1
+    command: >-
+      volume -ip=volume1 -ip.bind=0.0.0.0 -port=8080 -master=master:9333
+      -dir=/data -max=100 -dataCenter=dc1 -rack=rack1
+    volumes: [volume1-data:/data]
+    mem_limit: 512m
+    depends_on:
+      master: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
