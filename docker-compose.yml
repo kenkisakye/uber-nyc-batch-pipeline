@@ -1,6 +1,5 @@
 # Quarterly Uber pickup demand pipeline.
 # Build status: storage layer (SeaweedFS).  Ingestion, PySpark and the
-# scheduler are added in the next steps.
 
 name: ${COMPOSE_PROJECT_NAME:-uber-pipeline}
 
