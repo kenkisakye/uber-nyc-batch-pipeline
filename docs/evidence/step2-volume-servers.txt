@@ -1,0 +1,52 @@
+{
+  "Topology": {
+    "Max": 200,
+    "Free": 188,
+    "DataCenters": [
+      {
+        "Id": "dc1",
+        "Racks": [
+          {
+            "Id": "rack1",
+            "DataNodes": [
+              {
+                "Url": "volume1:8080",
+                "PublicUrl": "volume1:8080",
+                "Volumes": 6,
+                "EcShards": 0,
+                "Max": 100,
+                "VolumeIds": " 1-6"
+              },
+              {
+                "Url": "volume2:8080",
+                "PublicUrl": "volume2:8080",
+                "Volumes": 6,
+                "EcShards": 0,
+                "Max": 100,
+                "VolumeIds": " 1-6"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "Layouts": [
+      {
+        "replication": "001",
+        "ttl": "",
+        "writables": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "collection": "",
+        "diskType": "hdd"
+      }
+    ]
+  },
+  "TopologyId": "2206b14c-788e-46fd-97d6-b7bc36105732",
+  "Version": "30GB 4.17 4a5243886"
+}

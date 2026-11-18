@@ -1,0 +1,7 @@
+NAME                           IMAGE                      COMMAND                  SERVICE        CREATED        STATUS                          PORTS
+uber-pipeline-filer-1          chrislusf/seaweedfs:4.17   "weed filer -ip=file…"   filer          28 hours ago   Up 28 hours (healthy)           127.0.0.1:8888->8888/tcp
+uber-pipeline-master-1         chrislusf/seaweedfs:4.17   "weed master -ip=mas…"   master         28 hours ago   Up 28 hours (healthy)           127.0.0.1:9333->9333/tcp
+uber-pipeline-s3-1             chrislusf/seaweedfs:4.17   "/bin/sh /scripts/s3…"   s3             28 hours ago   Restarting (1) 51 seconds ago   
+uber-pipeline-storage-init-1   chrislusf/seaweedfs:4.17   "/bin/sh /scripts/in…"   storage-init   28 hours ago   Exited (0) 22 hours ago         
+uber-pipeline-volume1-1        chrislusf/seaweedfs:4.17   "weed volume -ip=vol…"   volume1        28 hours ago   Up 28 hours (healthy)           7333/tcp, 8080/tcp, 8333/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp
+uber-pipeline-volume2-1        chrislusf/seaweedfs:4.17   "weed volume -ip=vol…"   volume2        28 hours ago   Up 28 hours (healthy)           7333/tcp, 8080/tcp, 8333/tcp, 8888/tcp, 9333/tcp, 18080/tcp, 18888/tcp, 19333/tcp

@@ -1,0 +1,67 @@
+storage-init-1  | creating bucket raw
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:29.023677 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:29.025137 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.288125ms
+storage-init-1  | I1117 16:30:29.025721 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:29.026316 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 461.583µs
+storage-init-1  | > create bucket under /buckets
+storage-init-1  | created bucket raw
+storage-init-1  | > creating bucket processed
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:29.166314 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:29.167701 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.210333ms
+storage-init-1  | I1117 16:30:29.168212 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:29.169094 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 756.791µs
+storage-init-1  | > create bucket under /buckets
+storage-init-1  | created bucket processed
+storage-init-1  | > creating bucket quarantine
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:29.393578 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:29.394802 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.035791ms
+storage-init-1  | I1117 16:30:29.395264 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:29.395956 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 547µs
+storage-init-1  | > create bucket under /buckets
+storage-init-1  | created bucket quarantine
+storage-init-1  | > creating bucket published
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:29.683806 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:29.685450 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.288792ms
+storage-init-1  | I1117 16:30:29.685957 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:29.686701 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 607.292µs
+storage-init-1  | > create bucket under /buckets
+storage-init-1  | created bucket published
+storage-init-1  | > creating bucket pipeline-state
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:29.960178 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:29.961450 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 996.25µs
+storage-init-1  | I1117 16:30:29.961877 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:29.962436 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 439.542µs
+storage-init-1  | > create bucket under /buckets
+storage-init-1  | created bucket pipeline-state
+storage-init-1  | > Buckets now present:
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 16:30:30.052809 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 16:30:30.054080 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.083042ms
+storage-init-1  | I1117 16:30:30.054568 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 16:30:30.055206 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 464.167µs
+storage-init-1  | >   pipeline-state	size:0	chunk:0
+storage-init-1  |   processed	size:0	chunk:0
+storage-init-1  |   published	size:0	chunk:0
+storage-init-1  |   quarantine	size:0	chunk:0
+storage-init-1  |   raw	size:0	chunk:0
+storage-init-1  | > bucket raw already exists
+storage-init-1  | bucket processed already exists
+storage-init-1  | bucket quarantine already exists
+storage-init-1  | bucket published already exists
+storage-init-1  | bucket pipeline-state already exists
+storage-init-1  | Buckets now present:
+storage-init-1  | master: master:9333 filer: filer:8888
+storage-init-1  | I1117 23:09:59.278936 masterclient.go:440 .adminShell masterClient bootstraps with masters {[master:9333] <nil>}
+storage-init-1  | I1117 23:09:59.280472 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 1.112084ms
+storage-init-1  | I1117 23:09:59.281100 masterclient.go:247 master master:9333 redirected to leader master:9333.19333
+storage-init-1  | I1117 23:09:59.281778 masterclient.go:216 .adminShell masterClient gRPC stream established to master:9333 in 457.25µs
+storage-init-1  | >   pipeline-state	size:0	chunk:0
+storage-init-1  |   processed	size:0	chunk:0
+storage-init-1  |   published	size:0	chunk:0
+storage-init-1  |   quarantine	size:0	chunk:0
+storage-init-1  |   raw	size:0	chunk:0
