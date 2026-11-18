@@ -5,7 +5,7 @@ quarterly demand tables for a forecasting application. Every component runs
 as an isolated Docker container, and the whole system is defined in this
 repository (Infrastructure as Code).
 
-Portfolio project for *Project: Data Engineering* (DLMDSEDE02),
+*Project: Data Engineering*  (DLMDSEDE02),
 IU International University of Applied Sciences.
 
 ![Architecture](docs/architecture.png)
