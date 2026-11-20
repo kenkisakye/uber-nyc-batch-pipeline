@@ -1,0 +1,21 @@
+2026-11-20 22:56:33,882 INFO ingestion month=2014-04 run_id=d75eee523b97 started
+2026-11-20 22:56:35,131 INFO ingestion month=2014-04 skipped, identical file already ingested rows=564516 seconds=1.3
+2026-11-20 22:56:35,135 INFO ingestion month=2014-05 run_id=901bbfbe43d9 started
+2026-11-20 22:56:37,307 INFO ingestion month=2014-05 ingested rows=652435 seconds=2.2
+2026-11-20 22:56:37,310 INFO ingestion month=2014-06 run_id=b5953de822d4 started
+2026-11-20 22:56:38,952 INFO ingestion month=2014-06 ingested rows=663844 seconds=1.6
+2026-11-20 22:56:38,955 INFO ingestion month=2014-07 run_id=6b2dd96b873a started
+2026-11-20 22:56:40,848 INFO ingestion month=2014-07 ingested rows=796121 seconds=1.9
+2026-11-20 22:56:40,850 INFO ingestion month=2014-08 run_id=389f60e2a80e started
+2026-11-20 22:56:42,826 INFO ingestion month=2014-08 ingested rows=829275 seconds=2.0
+2026-11-20 22:56:42,828 INFO ingestion month=2014-09 run_id=b3e4bdf9b270 started
+2026-11-20 22:56:45,296 INFO ingestion month=2014-09 ingested rows=1028136 seconds=2.5
+
+month    status           rows  seconds  outcome
+2014-04  succeeded     564,516     1.27  skipped, identical file already ingested
+2014-05  succeeded     652,435     2.17  ingested
+2014-06  succeeded     663,844     1.64  ingested
+2014-07  succeeded     796,121     1.89  ingested
+2014-08  succeeded     829,275     1.98  ingested
+2014-09  succeeded   1,028,136     2.47  ingested
+total                4,534,327
