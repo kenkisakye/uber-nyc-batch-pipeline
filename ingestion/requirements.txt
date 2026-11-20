@@ -1,0 +1,2 @@
+# Pinned: newer boto3 versions add checksum headers that some S3-compatible stores reject
+boto3~=1.35.0
