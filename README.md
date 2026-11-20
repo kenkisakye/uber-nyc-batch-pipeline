@@ -69,18 +69,20 @@ filer <http://localhost:8888>.
 ## Stop and reset
 
 ```bash
-docker compose down        # stop, keep the data
-docker compose down -v     # stop and delete all stored data
+# stop, keep the data
+docker compose down
+# stop and delete all stored data        
+docker compose down -v    
 ```
 
 ## Repository layout
 
 ```
 docker-compose.yml   all services, networks and volumes
-.env.example         pinned versions and access keys template (copy to .env)
+.env.example         pinned versions and access keys template
 storage/             S3 gateway start script, bucket setup
 tools/               access check
-data/                landing folder for the Kaggle files (not committed)
+data/                landing folder for the Kaggle files
 docs/                architecture diagram
 ```
 

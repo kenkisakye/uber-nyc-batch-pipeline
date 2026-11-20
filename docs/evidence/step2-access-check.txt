@@ -1,0 +1,15 @@
+identity action bucket      expected  result
+INGEST   write  raw         allow     allow  OK
+INGEST   write  published   deny      deny  OK
+INGEST   list   processed   deny      deny  OK
+SPARK    list   raw         allow     allow  OK
+SPARK    write  raw         deny      deny  OK
+SPARK    write  processed   allow     allow  OK
+SPARK    write  quarantine  allow     allow  OK
+SPARK    write  published   allow     allow  OK
+APP      list   published   allow     allow  OK
+APP      write  published   deny      deny  OK
+APP      list   raw         deny      deny  OK
+APP      list   quarantine  deny      deny  OK
+
+All access checks passed.
