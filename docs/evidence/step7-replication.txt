@@ -1,0 +1,109 @@
+master: master:9333 filer: 
+master: master:9333 filers: [filer:8888]
+> Topology volumeSizeLimit:256 MB hdd(volume:72/200 active:72 free:128 remote:0)
+  DataCenter dc1 hdd(volume:72/200 active:72 free:128 remote:0)
+    Rack rack1 hdd(volume:72/200 active:72 free:128 remote:0)
+      DataNode volume1:8080 hdd(volume:36/100 active:36 free:64 remote:0)
+        Disk hdd(volume:36/100 active:36 free:64 remote:0) id:0
+          volume Id:1, Size:2000, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:5, DeleteCount:3, DeletedByteCount:510, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:2, Size:1992, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266306 
+          volume Id:3, Size:1848, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:4, DeleteCount:2, DeletedByteCount:340, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:4, Size:1384, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795267121 
+          volume Id:5, Size:1152, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795267161 
+          volume Id:6, Size:1640, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:4, DeleteCount:1, DeletedByteCount:171, ReadOnly:false, ModifiedAtSecond:1795266282 
+          volume Id:7, Size:3992296, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:8, Size:8900888, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:8, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:9, Size:11115280, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:9, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:10, Size:1490528, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266222 
+          volume Id:11, Size:4868904, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:5, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:12, Size:7122168, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:7, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:13, Size:19622480, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:13, DeleteCount:9, DeletedByteCount:16363161, ReadOnly:false, ModifiedAtSecond:1795266282 
+          volume Id:14, Size:8570520, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:5, DeleteCount:4, DeletedByteCount:6252061, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:15, Size:9368856, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:5, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:16, Size:8611776, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:8, DeleteCount:4, DeletedByteCount:7052736, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:17, Size:7983888, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:5322486, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:18, Size:13046088, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:8, DeleteCount:5, DeletedByteCount:9808994, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:19, Size:2248, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:1, DeletedByteCount:703, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:20, Size:3480, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266234 
+          volume Id:21, Size:2312, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:3, DeletedByteCount:2109, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:22, Size:2776, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:2, DeleteCount:1, DeletedByteCount:1964, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:23, Size:4344, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:4, DeleteCount:4, DeletedByteCount:4073, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:24, Size:2312, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:3, DeletedByteCount:2109, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:25, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:26, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:27, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:28, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:29, Size:170544, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266289 
+          volume Id:30, Size:41632, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:1, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266349 
+          volume Id:31, Size:3169496, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:1858417, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:32, Size:1319848, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:1315295, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:33, Size:1104, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:1, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266294 
+          volume Id:34, Size:4456, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:1, DeleteCount:1, DeletedByteCount:4386, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:35, Size:3713648, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:4, DeleteCount:2, DeletedByteCount:1858417, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:36, Size:1315464, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:2, DeleteCount:1, DeletedByteCount:1310909, ReadOnly:false, ModifiedAtSecond:1795266306 
+        Disk hdd {Size:114457384 FileCount:131 DeletedFileCount:50 DeletedBytes:51158841} 
+      DataNode volume1:8080 {Size:114457384 FileCount:131 DeletedFileCount:50 DeletedBytes:51158841} 
+  DataCenter dc1 hdd(volume:72/200 active:72 free:128 remote:0)
+    Rack rack1 hdd(volume:72/200 active:72 free:128 remote:0)
+      DataNode volume2:8080 hdd(volume:36/100 active:36 free:64 remote:0)
+        Disk hdd(volume:36/100 active:36 free:64 remote:0) id:0
+          volume Id:1, Size:2000, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:5, DeleteCount:3, DeletedByteCount:510, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:2, Size:1992, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266306 
+          volume Id:3, Size:1848, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:4, DeleteCount:2, DeletedByteCount:340, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:4, Size:1384, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795267121 
+          volume Id:5, Size:1152, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795267161 
+          volume Id:6, Size:1640, ReplicaPlacement:001, Collection:pipeline-state, Version:3, Ttl:, FileCount:4, DeleteCount:1, DeletedByteCount:171, ReadOnly:false, ModifiedAtSecond:1795266282 
+          volume Id:7, Size:3992296, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:8, Size:8900888, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:8, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:9, Size:11115280, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:9, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:10, Size:1490528, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266222 
+          volume Id:11, Size:4868904, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:5, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:12, Size:7122168, ReplicaPlacement:001, Collection:raw, Version:3, Ttl:, FileCount:7, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266268 
+          volume Id:13, Size:19622480, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:13, DeleteCount:9, DeletedByteCount:16363161, ReadOnly:false, ModifiedAtSecond:1795266282 
+          volume Id:14, Size:8570520, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:5, DeleteCount:4, DeletedByteCount:6252061, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:15, Size:9368856, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:5, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:16, Size:8611776, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:8, DeleteCount:4, DeletedByteCount:7052736, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:17, Size:7983888, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:5322486, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:18, Size:13046088, ReplicaPlacement:001, Collection:processed, Version:3, Ttl:, FileCount:8, DeleteCount:5, DeletedByteCount:9808994, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:19, Size:2248, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:1, DeletedByteCount:703, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:20, Size:3480, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266234 
+          volume Id:21, Size:2312, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:3, DeletedByteCount:2109, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:22, Size:2776, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:2, DeleteCount:1, DeletedByteCount:1964, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:23, Size:4344, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:4, DeleteCount:4, DeletedByteCount:4073, ReadOnly:false, ModifiedAtSecond:1795266281 
+          volume Id:24, Size:2312, ReplicaPlacement:001, Collection:quarantine, Version:3, Ttl:, FileCount:3, DeleteCount:3, DeletedByteCount:2109, ReadOnly:false, ModifiedAtSecond:1795266264 
+          volume Id:25, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:26, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:27, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:28, Size:8, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:0, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266229 
+          volume Id:29, Size:170544, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:2, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266289 
+          volume Id:30, Size:41632, ReplicaPlacement:001, Collection:, Version:3, Ttl:, FileCount:1, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266349 
+          volume Id:31, Size:3169496, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:1858417, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:32, Size:1319848, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:3, DeleteCount:2, DeletedByteCount:1315295, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:33, Size:1104, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:1, DeleteCount:0, DeletedByteCount:0, ReadOnly:false, ModifiedAtSecond:1795266294 
+          volume Id:34, Size:4456, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:1, DeleteCount:1, DeletedByteCount:4386, ReadOnly:false, ModifiedAtSecond:1795266295 
+          volume Id:35, Size:3713648, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:4, DeleteCount:2, DeletedByteCount:1858417, ReadOnly:false, ModifiedAtSecond:1795266307 
+          volume Id:36, Size:1315464, ReplicaPlacement:001, Collection:published, Version:3, Ttl:, FileCount:2, DeleteCount:1, DeletedByteCount:1310909, ReadOnly:false, ModifiedAtSecond:1795266306 
+        Disk hdd {Size:114457384 FileCount:131 DeletedFileCount:50 DeletedBytes:51158841} 
+      DataNode volume2:8080 {Size:114457384 FileCount:131 DeletedFileCount:50 DeletedBytes:51158841} 
+    Rack rack1 {Size:228914768 FileCount:262 DeletedFileCount:100 DeletedBytes:102317682} 
+  DataCenter dc1 {Size:228914768 FileCount:262 DeletedFileCount:100 DeletedBytes:102317682} 
+total size:228914768 file_count:262 deleted_file:100 deleted_bytes:102317682 
+> Reading published releases with the forecasting app's read-only key
+
+2014-Q2: release 20261121T130451Z-ae6590, months 2014-04, 2014-05, 2014-06
+PASS   demand_by_cell_hour: 279,785 rows, 1,880,791 pickups  (manifest says 1,880,791)
+PASS   demand_by_base_day: 455 rows, 1,880,791 pickups  (manifest says 1,880,791)
+  busiest grid cells: 40.75_-73.98 (103,364), 40.75_-73.99 (84,995), 40.72_-74.00 (83,596)
+
+2014-Q3: release 20261121T130503Z-20657e, months 2014-07, 2014-08, 2014-09
+PASS   demand_by_cell_hour: 387,537 rows, 2,653,532 pickups  (manifest says 2,653,532)
+PASS   demand_by_base_day: 460 rows, 2,653,532 pickups  (manifest says 2,653,532)
+  busiest grid cells: 40.75_-73.98 (121,822), 40.72_-74.00 (104,076), 40.75_-73.99 (102,843)
+
+Access checks for the read-only key
+PASS cannot write to published
+PASS cannot list raw
+PASS cannot read a raw file
+PASS cannot list quarantine
+
+All checks passed.

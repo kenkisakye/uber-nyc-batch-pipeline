@@ -20,7 +20,7 @@ IU International University of Applied Sciences.
 | 4 | PySpark monthly validation (`processed` and `quarantine`) | Done |
 | 5 | PySpark quarterly job (staging, checks, publish manifest last) | Done |
 | 6 | Scheduler: APScheduler with retries and run state | Done |
-| 7 | Failure tests, run times, documentation | Planned |
+| 7 | Failure tests, run times, documentation | Done |
 
 ## Data
 
@@ -236,6 +236,60 @@ docker compose exec -e RETRY_DELAYS=10,20,40 scheduler python /app/scheduler.py 
 The first validation attempts fail with "worker unreachable" and are retried;
 once the worker is back, the cycle completes without manual help.
 
+## Evidence
+
+All evidence is produced by commands in this README and kept in
+`docs/evidence/`:
+
+| File | Shows |
+|---|---|
+| `step2-services.txt`, `step2-buckets.txt`, `step2-volume-servers.txt` | Storage healthy, buckets created, two volume servers with replication `001` |
+| `step2-access-check.txt` | Every S3 key can do exactly what it should |
+| `step2-dataset.txt` | Six source files, row counts and SHA-256 checksums |
+| `step3-ingestion.txt` | All months ingested; a repeated month is skipped |
+| `step4-validation.txt` | Validation per month, totals reconcile, rejected rows by reason |
+| `step5-release.txt`, `step5-app-check.txt` | Both quarters published; app reads them with the read-only key |
+| `step5-failure-test.txt` | Interrupted release leaves the previous release live |
+| `step6-scheduler.txt`, `step6-retry-test.txt`, `step6-restart.txt` | Scheduled catch-up, retries while a worker is down, timetable restored after restart |
+| `step7-clean-run.txt`, `run-report.md` | Full rebuild from empty storage, with run times per stage |
+| `step7-replication.txt` | Releases still readable with one volume server stopped |
+
+### Full rebuild from empty storage
+
+```bash
+docker compose down -v                  # deletes all stored data; data/ and .env stay
+docker compose up -d --build            # the scheduler processes everything again
+docker compose logs -f scheduler        # wait for "quarterly cycle finished"
+docker compose logs scheduler > docs/evidence/step7-clean-run.txt
+python3 tools/run_report.py > docs/evidence/run-report.md
+```
+
+### Replication test: one volume server down
+
+```bash
+echo "volume.list" | docker compose exec -T master weed shell -master=master:9333 > docs/evidence/step7-replication.txt
+docker compose stop volume1 && sleep 20
+python tools/forecast_app_check.py >> docs/evidence/step7-replication.txt
+docker compose start volume1
+```
+
+While a volume server is down, existing files stay readable from the other
+copy, but new writes fail because replication `001` needs two servers.
+
+## Known limitations
+
+- **Single host.** Everything runs on one machine; the master and the filer
+  are single points of failure (two volume servers protect the data itself).
+- **Spark in local mode.** Jobs run in one container; scaling out would mean
+  a Spark cluster (master and workers) instead of `local[*]`.
+- **Filer web interface.** `localhost:8888` reads files without an access
+  key. It is useful for inspection and reachable only from this machine,
+  but bypasses the S3 access control and should be removed in production.
+- **Secrets in `.env`.** Suitable for local development; production would use
+  Docker secrets or a secret manager.
+- **Historical data.** The 2014 files are replayed: the timetable is real, but
+  all six months are already present when the stack starts.
+
 ## Stop and reset
 
 ```bash
@@ -253,7 +307,7 @@ ingestion/           ingestion service (Dockerfile, ingest.py, tests)
 runner/              HTTP job server used by the workers
 scheduler/           APScheduler service, cycles, retry logic, tests
 spark/               PySpark image, jobs, tests, Spark settings
-tools/               dataset download, access check, forecasting app check
+tools/               dataset download, access check, forecasting app check, run report
 data/                landing folder for the Kaggle files (not committed)
 docs/                architecture diagram
 ```

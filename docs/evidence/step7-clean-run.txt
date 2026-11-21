@@ -1,0 +1,30 @@
+scheduler-1  | 2026-11-21 13:03:06,810 INFO scheduler Scheduler started
+scheduler-1  | 2026-11-21 13:03:06,814 INFO scheduler Added job "monthly" to job store "default"
+scheduler-1  | 2026-11-21 13:03:06,815 INFO scheduler job monthly   added, cron '0 2 1 * *', next run 2026-12-01 02:00:00+00:00
+scheduler-1  | 2026-11-21 13:03:06,817 INFO scheduler Added job "quarterly" to job store "default"
+scheduler-1  | 2026-11-21 13:03:06,817 INFO scheduler job quarterly added, cron '0 4 1 1,4,7,10 *', next run 2027-01-01 04:00:00+00:00
+scheduler-1  | 2026-11-21 13:03:06,818 INFO scheduler Added job "catch-up" to job store "once"
+scheduler-1  | 2026-11-21 13:03:06,818 INFO scheduler catch-up run starts now
+scheduler-1  | 2026-11-21 13:03:06,818 INFO scheduler Resumed scheduler job processing
+scheduler-1  | 2026-11-21 13:03:06,818 INFO scheduler scheduler running (retry delays [30, 60, 120] s)
+scheduler-1  | 2026-11-21 13:03:06,820 INFO scheduler Running job "catch-up (trigger: date[2026-11-21 13:03:06 UTC], next run at: 2026-11-21 13:03:06 UTC)" (scheduled at 2026-11-21 13:03:06.818235+00:00)
+scheduler-1  | 2026-11-21 13:03:06,820 INFO scheduler monthly cycle started
+scheduler-1  | 2026-11-21 13:03:06,820 INFO scheduler Removed job catch-up
+scheduler-1  | 2026-11-21 13:03:09,392 INFO scheduler ingest 2014-04 succeeded in 2.6s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:24,683 INFO scheduler validate 2014-04 succeeded in 15.3s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:27,070 INFO scheduler ingest 2014-05 succeeded in 2.4s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:40,247 INFO scheduler validate 2014-05 succeeded in 13.2s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:42,661 INFO scheduler ingest 2014-06 succeeded in 2.4s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:55,390 INFO scheduler validate 2014-06 succeeded in 12.7s (attempt 1)
+scheduler-1  | 2026-11-21 13:03:58,193 INFO scheduler ingest 2014-07 succeeded in 2.8s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:10,474 INFO scheduler validate 2014-07 succeeded in 12.3s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:13,210 INFO scheduler ingest 2014-08 succeeded in 2.7s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:25,371 INFO scheduler validate 2014-08 succeeded in 12.2s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:28,621 INFO scheduler ingest 2014-09 succeeded in 3.2s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:42,521 INFO scheduler validate 2014-09 succeeded in 13.9s (attempt 1)
+scheduler-1  | 2026-11-21 13:04:42,522 INFO scheduler monthly cycle finished in 96s: 2014-04 ok, 2014-05 ok, 2014-06 ok, 2014-07 ok, 2014-08 ok, 2014-09 ok
+scheduler-1  | 2026-11-21 13:04:42,523 INFO scheduler quarterly cycle started
+scheduler-1  | 2026-11-21 13:04:54,946 INFO scheduler release 2014-Q2 succeeded in 12.4s (attempt 1)
+scheduler-1  | 2026-11-21 13:05:07,115 INFO scheduler release 2014-Q3 succeeded in 12.2s (attempt 1)
+scheduler-1  | 2026-11-21 13:05:07,115 INFO scheduler quarterly cycle finished in 25s: 2014-Q2 ok, 2014-Q3 ok
+scheduler-1  | 2026-11-21 13:05:07,116 INFO scheduler Job "catch-up (trigger: date[2026-11-21 13:03:06 UTC], next run at: 2026-11-21 13:03:06 UTC)" executed successfully

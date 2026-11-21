@@ -1,0 +1,6 @@
+scheduler-1  | 2026-11-21 03:14:01,751 INFO scheduler job monthly   restored from job store, cron '0 2 1 * *', next run 2026-12-01 02:00:00+00:00
+scheduler-1  | 2026-11-21 03:14:01,751 INFO scheduler job quarterly restored from job store, cron '0 4 1 1,4,7,10 *', next run 2027-01-01 04:00:00+00:00
+scheduler-1  | 2026-11-21 03:14:01,751 INFO scheduler Added job "catch-up" to job store "once"
+scheduler-1  | 2026-11-21 03:14:01,751 INFO scheduler Resumed scheduler job processing
+scheduler-1  | 2026-11-21 03:14:01,752 INFO scheduler Running job "catch-up (trigger: date[2026-11-21 03:14:01 UTC], next run at: 2026-11-21 03:14:01 UTC)" (scheduled at 2026-11-21 03:14:01.751659+00:00)
+scheduler-1  | 2026-11-21 03:14:01,752 INFO scheduler Removed job catch-up
