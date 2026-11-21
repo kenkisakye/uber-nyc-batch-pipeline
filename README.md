@@ -77,8 +77,10 @@ filer <http://localhost:8888>.
 
 ```bash
 docker compose build ingestion
-docker compose run --rm ingestion --month 2014-04   # one month
-docker compose run --rm ingestion --all             # all six months
+# one month
+docker compose run --rm ingestion --month 2014-04   
+# all six months
+docker compose run --rm ingestion --all             
 ```
 
 For each month the service checks the header, counts the rows and the
@@ -105,8 +107,10 @@ python3 ingestion/tests/test_ingest.py
 ## Run the monthly validation (PySpark)
 
 ```bash
-docker compose --profile jobs build spark          # first build takes several minutes
-docker compose run --rm spark test                 # unit tests on sample rows
+# first build takes several minutes
+docker compose --profile jobs build spark          
+# unit tests on sample rows
+docker compose run --rm spark test                 
 docker compose run --rm spark validate --month 2014-04
 docker compose run --rm spark validate --all
 ```
@@ -137,8 +141,10 @@ curl -s http://localhost:8888/buckets/processed/pickups/year=2014/month=04/_vali
 ## Run the quarterly release (PySpark)
 
 ```bash
-docker compose run --rm spark test                    # validation and release tests
-docker compose run --rm spark release --all           # 2014-Q2 and 2014-Q3
+# validation and release tests
+docker compose run --rm spark test                    
+# 2014-Q2 and 2014-Q3
+docker compose run --rm spark release --all           
 curl -s "http://localhost:8888/buckets/published/quarter=2014-Q2/_manifest.json"
 ```
 
@@ -219,10 +225,12 @@ Design points:
   runs at a time.
 
 ```bash
-docker compose logs -f scheduler                                   # watch the cycles
+# watch the cycles
+docker compose logs -f scheduler                                   
 docker compose exec scheduler python /app/scheduler.py run-now monthly
 docker compose exec scheduler python /app/scheduler.py run-now quarterly
-python3 scheduler/tests/test_scheduler.py                          # retry logic tests
+# retry logic tests
+python3 scheduler/tests/test_scheduler.py                          
 ```
 
 ### Failure test: worker down during a cycle
@@ -257,9 +265,12 @@ All evidence is produced by commands in this README and kept in
 ### Full rebuild from empty storage
 
 ```bash
-docker compose down -v                  # deletes all stored data; data/ and .env stay
-docker compose up -d --build            # the scheduler processes everything again
-docker compose logs -f scheduler        # wait for "quarterly cycle finished"
+# deletes all stored data; data/ and .env stay
+docker compose down -v                  
+# the scheduler processes everything again
+docker compose up -d --build            
+# wait for "quarterly cycle finished"
+docker compose logs -f scheduler        
 docker compose logs scheduler > docs/evidence/step7-clean-run.txt
 python3 tools/run_report.py > docs/evidence/run-report.md
 ```
@@ -293,8 +304,10 @@ copy, but new writes fail because replication `001` needs two servers.
 ## Stop and reset
 
 ```bash
-docker compose down        # stop, keep the data
-docker compose down -v     # stop and delete all stored data
+# stop, keep the data
+docker compose down        
+# stop and delete all stored data
+docker compose down -v     
 ```
 
 ## Repository layout
@@ -346,7 +359,7 @@ step is built and tested.
 - Memory limit and log rotation for every container.
 - Start, check and reset each take one command (see above).
 
-**PySpark** (from step 4)
+**PySpark**
 - Job code in this repository, parameterised by month or quarter.
 - One fixed schema definition instead of schema guessing.
 - Unit tests on a small sample of rows.
