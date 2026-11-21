@@ -1,5 +1,7 @@
 # Quarterly Uber pickup demand pipeline.
-# Build status: storage layer (SeaweedFS).  Ingestion, PySpark and the
+# Complete pipeline: storage, ingestion, PySpark validation and release,
+# and the scheduler that runs them on a timetable.
+#   docker compose up -d --build
 
 name: ${COMPOSE_PROJECT_NAME:-uber-pipeline}
 
@@ -51,7 +53,6 @@ services:
       retries: 10
       start_period: 20s
 
-
   volume2:
     <<: *seaweedfs
     hostname: volume2
@@ -88,7 +89,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 20s
-
 
   s3:
     <<: *seaweedfs
@@ -132,13 +132,13 @@ services:
   ingestion:
     <<: *common
     profiles: [jobs]
-    build:
+    build: &ingestion-build
       context: ./ingestion
       args:
         PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.11-slim-bookworm}
     image: uber-pipeline/ingestion:1.0
     restart: "no"
-    environment:
+    environment: &ingestion-env
       S3_ENDPOINT: http://s3:8333
       S3_ACCESS_KEY: ${S3_INGEST_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_INGEST_SECRET_KEY}
@@ -147,20 +147,20 @@ services:
     mem_limit: 256m
     depends_on:
       s3: {condition: service_healthy}
-  
-    # On demand (later started by the scheduler): PySpark jobs.
+
+  # On demand (later started by the scheduler): PySpark jobs.
   #   docker compose run --rm spark test
   #   docker compose run --rm spark validate --month 2014-04
   spark:
     <<: *common
     profiles: [jobs]
-    build:
+    build: &spark-build
       context: ./spark
       args:
         SPARK_IMAGE: ${SPARK_IMAGE:-apache/spark:4.2.0-scala2.13-java17-python3-ubuntu}
     image: uber-pipeline/spark:1.0
     restart: "no"
-    environment:
+    environment: &spark-env
       S3_ENDPOINT: http://s3:8333
       S3_ACCESS_KEY: ${S3_SPARK_ACCESS_KEY}
       S3_SECRET_KEY: ${S3_SPARK_SECRET_KEY}
@@ -170,6 +170,67 @@ services:
     mem_limit: 3g
     depends_on:
       s3: {condition: service_healthy}
+
+  # ---- Scheduled operation ----------------------------------------------
+  # The workers run the same images as the on-demand jobs above, behind a
+  # small HTTP job server, so the scheduler can start jobs over the private
+  # network without access to Docker. No ports are published.
+  ingestion-worker:
+    <<: *common
+    build: *ingestion-build
+    image: uber-pipeline/ingestion:1.0
+    entrypoint: ["python", "/runner/job_server.py"]
+    environment:
+      <<: *ingestion-env
+      JOB_COMMAND: python /app/ingest.py
+    volumes:
+      - ./data:/data:ro
+      - ./runner/job_server.py:/runner/job_server.py:ro
+    mem_limit: 256m
+    depends_on:
+      s3: {condition: service_healthy}
+    healthcheck: &worker-health
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  spark-worker:
+    <<: *common
+    build: *spark-build
+    image: uber-pipeline/spark:1.0
+    entrypoint: ["python3", "/runner/job_server.py"]
+    environment:
+      <<: *spark-env
+      JOB_COMMAND: /app/run.sh
+    volumes:
+      - ./runner/job_server.py:/runner/job_server.py:ro
+    mem_limit: 3g
+    depends_on:
+      s3: {condition: service_healthy}
+    healthcheck: *worker-health
+
+  scheduler:
+    <<: *common
+    build:
+      context: ./scheduler
+      args:
+        PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.11-slim-bookworm}
+    image: uber-pipeline/scheduler:1.0
+    environment:
+      INGESTION_URL: http://ingestion-worker:8000
+      SPARK_URL: http://spark-worker:8000
+      MONTHLY_CRON: ${MONTHLY_CRON:-0 2 1 * *}
+      QUARTERLY_CRON: ${QUARTERLY_CRON:-0 4 1 1,4,7,10 *}
+      RUN_ON_START: ${RUN_ON_START:-true}
+      RETRY_DELAYS: ${RETRY_DELAYS:-30,60,120}
+    volumes: [scheduler-state:/state]
+    mem_limit: 256m
+    depends_on:
+      storage-init: {condition: service_completed_successfully}
+      ingestion-worker: {condition: service_healthy}
+      spark-worker: {condition: service_healthy}
 
   # On demand: verifies that each S3 identity has exactly its intended access
   access-check:
@@ -191,6 +252,7 @@ networks:
     driver: bridge
 
 volumes:
+  scheduler-state:
   master-data:
   volume1-data:
   volume2-data:

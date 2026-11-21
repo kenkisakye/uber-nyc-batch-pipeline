@@ -5,7 +5,7 @@ quarterly demand tables for a forecasting application. Every component runs
 as an isolated Docker container, and the whole system is defined in this
 repository (Infrastructure as Code).
 
-*Project: Data Engineering*  (DLMDSEDE02),
+Portfolio project for *Project: Data Engineering* (DLMDSEDE02),
 IU International University of Applied Sciences.
 
 ![Architecture](docs/architecture.png)
@@ -16,10 +16,10 @@ IU International University of Applied Sciences.
 |---|---|---|
 | 1 | Repository skeleton | Done |
 | 2 | Storage: SeaweedFS (master, 2 volume servers, filer, S3 gateway, buckets, access keys) | Done |
-| 3 | Ingestion service (monthly CSV to `raw`, with checksum) | Planned |
-| 4 | PySpark monthly validation (`processed` and `quarantine`) | Planned |
-| 5 | PySpark quarterly job (staging, checks, publish manifest last) | Planned |
-| 6 | Scheduler: APScheduler with retries and run state | Planned |
+| 3 | Ingestion service (monthly CSV to `raw`, with checksum) | Done |
+| 4 | PySpark monthly validation (`processed` and `quarantine`) | Done |
+| 5 | PySpark quarterly job (staging, checks, publish manifest last) | Done |
+| 6 | Scheduler: APScheduler with retries and run state | Done |
 | 7 | Failure tests, run times, documentation | Planned |
 
 ## Data
@@ -29,8 +29,15 @@ IU International University of Applied Sciences.
 to September 2014, about 4.5 million pickups. Each row holds a pickup
 timestamp, latitude, longitude and base code.
 
-The files are not part of this repository. Download them from Kaggle and
-place `uber-raw-data-apr14.csv` to `uber-raw-data-sep14.csv` in `data/`.
+The files are not part of this repository. Fetch them once on your own
+machine; the script copies the six 2014 files into `data/` and checks the
+row total:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install kagglehub
+python tools/fetch_data.py
+```
 
 ## Requirements
 
@@ -66,23 +73,188 @@ docker compose --profile check run --rm access-check
 Web interfaces (this machine only): master <http://localhost:9333>,
 filer <http://localhost:8888>.
 
+## Run the ingestion
+
+```bash
+docker compose build ingestion
+docker compose run --rm ingestion --month 2014-04   # one month
+docker compose run --rm ingestion --all             # all six months
+```
+
+For each month the service checks the header, counts the rows and the
+timestamps outside the month, computes the SHA-256 checksum, uploads the file
+to `raw/year=2014/month=MM/` and writes `_ingest.json` next to it **last**.
+Later jobs only read months that have this marker. Running a month again
+skips it if the file is identical and refuses it if the file differs, because
+raw files are never overwritten. Every run is recorded in
+`pipeline-state/ingestion/<month>.json` with its status, row counts and timings.
+
+Inspect the results (filer web interface, this machine only):
+
+```bash
+curl -s http://localhost:8888/buckets/raw/year=2014/month=04/_ingest.json
+curl -s http://localhost:8888/buckets/pipeline-state/ingestion/2014-04.json
+```
+
+Tests for the ingestion logic (no extra packages needed):
+
+```bash
+python3 ingestion/tests/test_ingest.py
+```
+
+## Run the monthly validation (PySpark)
+
+```bash
+docker compose --profile jobs build spark          # first build takes several minutes
+docker compose run --rm spark test                 # unit tests on sample rows
+docker compose run --rm spark validate --month 2014-04
+docker compose run --rm spark validate --all
+```
+
+The job reads a month only if its `_ingest.json` marker exists, checks that
+Spark reads exactly the row count recorded by ingestion, and gives every row a
+reject reason or none:
+
+| Reason | Rule |
+|---|---|
+| `unreadable_timestamp` | Pickup time cannot be parsed |
+| `outside_month` | Pickup time is not in the month of the file |
+| `unreadable_coordinates` | Latitude or longitude is not a number |
+| `outside_service_area` | Outside 39.5–41.5° N, 72–75° W (New York area incl. airports) |
+| `invalid_base` | Base code is not of the form `B` + 5 digits |
+
+Valid rows go to `processed/pickups/year=2014/month=MM/` as Parquet, with the
+pickup reduced to a 0.01° grid cell (about 1 km): exact coordinates never
+leave `raw` and `quarantine`. Rejected rows go to
+`quarantine/pickups/year=2014/month=MM/` with their reason. `_validated.json`
+is written last; running a month again skips it unless `--force` is given.
+Every run is recorded in `pipeline-state/validation/<month>.json`.
+
+```bash
+curl -s http://localhost:8888/buckets/processed/pickups/year=2014/month=04/_validated.json
+```
+
+## Run the quarterly release (PySpark)
+
+```bash
+docker compose run --rm spark test                    # validation and release tests
+docker compose run --rm spark release --all           # 2014-Q2 and 2014-Q3
+curl -s "http://localhost:8888/buckets/published/quarter=2014-Q2/_manifest.json"
+```
+
+For each quarter the job requires `_validated.json` for all three months,
+aggregates the processed rows into two tables and writes them into a new
+release folder:
+
+| Table | One row per | Columns |
+|---|---|---|
+| `demand_by_cell_hour` | grid cell, date and hour | `pickup_date`, `pickup_hour`, `day_of_week`, `cell_id`, `cell_lat`, `cell_lon`, `pickups` |
+| `demand_by_base_day` | Uber base and date | `pickup_date`, `day_of_week`, `base`, `pickups` |
+
+It reads both tables back and checks that each totals exactly the valid rows
+recorded by validation. Only then does it write
+`published/quarter=<q>/_manifest.json`, which is the single write that makes
+the new release visible. Older release folders are kept, so a previous
+release can be restored by pointing the manifest back to it.
+
+### Forecasting app check (from this machine, read-only key)
+
+```bash
+source .venv/bin/activate
+pip install "boto3~=1.35.0" pyarrow
+python tools/forecast_app_check.py
+```
+
+Reads both releases through `localhost:8333` as the forecasting application
+would, checks the totals against the manifests, and confirms that the
+read-only key cannot write to `published` or read `raw` and `quarantine`.
+
+### Failure test: interrupted release
+
+```bash
+docker compose run --rm spark release --quarter 2014-Q2 --force --fail-before-manifest
+curl -s "http://localhost:8888/buckets/published/quarter=2014-Q2/_manifest.json"   # unchanged
+python tools/forecast_app_check.py                                                 # still passes
+```
+
+The run writes complete tables into a new release folder and then stops
+before the manifest. The manifest still names the previous release, so the
+forecasting application keeps reading complete data.
+
+## Scheduled operation (APScheduler)
+
+`docker compose up -d --build` starts the whole pipeline. Besides storage it
+runs two job workers and the scheduler:
+
+| Service | Role |
+|---|---|
+| `ingestion-worker` | Ingestion image behind a small HTTP job server (`runner/job_server.py`) |
+| `spark-worker` | PySpark image behind the same job server |
+| `scheduler` | APScheduler; starts the cycles below and retries failed jobs |
+
+| Cycle | Default time (UTC, set in `.env`) | Work |
+|---|---|---|
+| Monthly | `MONTHLY_CRON=0 2 1 * *` | For each month: ingest, then validate |
+| Quarterly | `QUARTERLY_CRON=0 4 1 1,4,7,10 *` | Release each quarter |
+
+With `RUN_ON_START=true` a catch-up run (monthly, then quarterly) starts as
+soon as the stack is up, so a fresh deployment processes all data. Every job
+skips work already done for the same source files, so cycles are safe to
+repeat.
+
+Design points:
+
+- **No Docker socket.** The scheduler starts jobs by calling the workers'
+  job server over the private network. The job server accepts only strictly
+  formatted arguments, starts the command without a shell, and runs one job
+  at a time.
+- **Least privilege.** The scheduler holds no storage keys; each worker holds
+  only its own job's key.
+- **Retries.** Each job call is retried with back-off (`RETRY_DELAYS`). A
+  worker that is down, busy or returns an error counts as a failed attempt.
+  A month that fails ingestion is not validated in that cycle.
+- **Persistence.** The timetable lives in a SQLite job store on the
+  `scheduler-state` volume. After a restart it is restored; a run missed
+  while the scheduler was down is started once (coalesced). Only one cycle
+  runs at a time.
+
+```bash
+docker compose logs -f scheduler                                   # watch the cycles
+docker compose exec scheduler python /app/scheduler.py run-now monthly
+docker compose exec scheduler python /app/scheduler.py run-now quarterly
+python3 scheduler/tests/test_scheduler.py                          # retry logic tests
+```
+
+### Failure test: worker down during a cycle
+
+```bash
+docker compose stop spark-worker
+(sleep 25 && docker compose start spark-worker) &
+docker compose exec -e RETRY_DELAYS=10,20,40 scheduler python /app/scheduler.py run-now monthly
+```
+
+The first validation attempts fail with "worker unreachable" and are retried;
+once the worker is back, the cycle completes without manual help.
+
 ## Stop and reset
 
 ```bash
-# stop, keep the data
-docker compose down
-# stop and delete all stored data        
-docker compose down -v    
+docker compose down        # stop, keep the data
+docker compose down -v     # stop and delete all stored data
 ```
 
 ## Repository layout
 
 ```
 docker-compose.yml   all services, networks and volumes
-.env.example         pinned versions and access keys template
+.env.example         pinned versions and access keys template (copy to .env)
 storage/             S3 gateway start script, bucket setup
-tools/               access check
-data/                landing folder for the Kaggle files
+ingestion/           ingestion service (Dockerfile, ingest.py, tests)
+runner/              HTTP job server used by the workers
+scheduler/           APScheduler service, cycles, retry logic, tests
+spark/               PySpark image, jobs, tests, Spark settings
+tools/               dataset download, access check, forecasting app check
+data/                landing folder for the Kaggle files (not committed)
 docs/                architecture diagram
 ```
 
@@ -105,11 +277,13 @@ step is built and tested.
 |---|---|---|
 | A container crashes | `restart: unless-stopped` and health checks; services start only when the ones they depend on are healthy | In place |
 | A volume server is lost | Replication `001`: every file is stored on both volume servers | In place |
-| A task fails mid-run | Scheduler retries with back-off; only one run of a job at a time | Step 6 |
-| A run is repeated | Each month and quarter overwrites its own output, so no duplicates | Steps 4–5 |
-| The scheduler restarts | Run state per month in `pipeline-state`; finished months are skipped, failed ones repeated | Step 6 |
-| Bad input rows | Rejected rows go to `quarantine`; the quarterly job stops if raw rows ≠ valid + quarantined rows | Steps 4–5 |
-| A quarterly run fails | Output goes to staging first; the manifest is written last, so the previous release stays live | Step 5 |
+| A task fails mid-run | Storage calls retried inside each job; the scheduler retries the whole job with back-off, one cycle at a time | In place, tested |
+| A run is repeated | Ingestion skips identical files and refuses changed ones; validation and release skip work already done for the same source files | In place |
+| A run stops halfway | Completion markers (`_ingest.json`, `_validated.json`) are written last and removed before a rewrite; later steps only read marked months | In place |
+| A worker is down | The scheduler's retries wait for it; the cycle continues once it is back | In place, tested |
+| The scheduler restarts | Timetable restored from its job store; a missed run is started once; finished months are skipped, failed ones repeated | In place |
+| Bad input rows | Rejected rows go to `quarantine` with a reason; validation stops if Spark's row count differs from ingestion's; the release stops unless both tables total exactly the valid rows | In place |
+| A quarterly run fails | Tables go into a new release folder; the manifest is written last, so the previous release stays live | In place, tested with `--fail-before-manifest` |
 
 ## Maintenance
 
