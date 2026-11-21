@@ -1,4 +1,4 @@
-# PySpark jobs: monthly validation (and, from step 5, the quarterly release).
+# PySpark jobs: monthly validation and quarterly release.
 ARG SPARK_IMAGE=apache/spark:4.2.0-scala2.13-java17-python3-ubuntu
 FROM ${SPARK_IMAGE}
 

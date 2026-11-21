@@ -1,29 +1,18 @@
-"""Unit tests for the monthly validation rules, on a handful of sample rows.
+"""Unit tests for the quarterly aggregation, on a handful of processed rows.
 
 Runs inside the Spark container, without any storage:
     docker compose run --rm spark test
 """
 
 import sys
+from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "jobs"))
 
 from pyspark.sql import SparkSession  # noqa: E402
-from validate_month import RAW_SCHEMA, classify, rejected_rows, valid_rows  # noqa: E402
-
-SAMPLE = [
-    # (Date/Time, Lat, Lon, Base, expected reject_reason)
-    ("4/1/2014 0:11:00", "40.769", "-73.9549", "B02512", None),
-    ("4/30/2014 23:59:00", "40.6413", "-73.7781", " B02764 ", None),  # JFK, padded base
-    ("5/1/2014 0:01:00", "40.75", "-73.98", "B02512", "outside_month"),
-    ("garbage", "40.75", "-73.98", "B02512", "unreadable_timestamp"),
-    ("4/2/2014 1:00:00", "abc", "-73.98", "B02512", "unreadable_coordinates"),
-    ("4/2/2014 1:00:00", "10.0", "-73.98", "B02512", "outside_service_area"),
-    ("4/2/2014 1:00:00", "40.75", "-73.98", "X1", "invalid_base"),
-    ("4/2/2014 1:00:00", "40.75", "-73.98", None, "invalid_base"),
-]
+from release_quarter import aggregate  # noqa: E402
 
 spark = (
     SparkSession.builder.master("local[1]")
@@ -33,10 +22,60 @@ spark = (
 )
 spark.sparkContext.setLogLevel("ERROR")
 
-raw = spark.createDataFrame([s[:4] for s in SAMPLE], RAW_SCHEMA)
-classified = classify(raw, 2014, 4)
-got = [r["reject_reason"] for r in classified.collect()]
-expected = [s[4] for s in SAMPLE]
+COLUMNS = [
+    "pickup_ts",
+    "pickup_date",
+    "pickup_hour",
+    "day_of_week",
+    "cell_lat",
+    "cell_lon",
+    "cell_id",
+    "base",
+]
+ROWS = [
+    (
+        datetime(2014, 4, 1, 8, 5),
+        date(2014, 4, 1),
+        8,
+        3,
+        Decimal("40.76"),
+        Decimal("-73.96"),
+        "40.76_-73.96",
+        "B02512",
+    ),
+    (
+        datetime(2014, 4, 1, 8, 40),
+        date(2014, 4, 1),
+        8,
+        3,
+        Decimal("40.76"),
+        Decimal("-73.96"),
+        "40.76_-73.96",
+        "B02764",
+    ),
+    (
+        datetime(2014, 4, 1, 9, 1),
+        date(2014, 4, 1),
+        9,
+        3,
+        Decimal("40.76"),
+        Decimal("-73.96"),
+        "40.76_-73.96",
+        "B02512",
+    ),
+    (
+        datetime(2014, 4, 2, 8, 0),
+        date(2014, 4, 2),
+        8,
+        4,
+        Decimal("40.64"),
+        Decimal("-73.79"),
+        "40.64_-73.79",
+        "B02512",
+    ),
+]
+rows = spark.createDataFrame(ROWS, COLUMNS)
+tables = aggregate(rows)
 failures = 0
 
 
@@ -46,35 +85,38 @@ def check(name, cond):
     failures += not cond
 
 
-for row, want, have in zip(SAMPLE, expected, got):
-    check(f"{row[0]!r:22} {row[1]!r:9} {row[3]!r:10} -> {want}", want == have)
+cell = {
+    (r["cell_id"], str(r["pickup_date"]), r["pickup_hour"]): r["pickups"]
+    for r in tables["demand_by_cell_hour"].collect()
+}
+check(
+    "two pickups in the same cell and hour are counted together",
+    cell[("40.76_-73.96", "2014-04-01", 8)] == 2,
+)
+check(
+    "a different hour is a separate row", cell[("40.76_-73.96", "2014-04-01", 9)] == 1
+)
+check(
+    "a different cell is a separate row", cell[("40.64_-73.79", "2014-04-02", 8)] == 1
+)
 
-valid = valid_rows(classified)
+base = {
+    (r["base"], str(r["pickup_date"])): r["pickups"]
+    for r in tables["demand_by_base_day"].collect()
+}
 check(
-    "valid rows hold no exact coordinates",
-    not {"lat_num", "lon_num", "Lat", "Lon"} & set(valid.columns),
+    "pickups per base and day",
+    base[("B02512", "2014-04-01")] == 2 and base[("B02764", "2014-04-01")] == 1,
 )
-first = valid.orderBy("pickup_ts").first()
+
+for name, df in tables.items():
+    total = df.agg({"pickups": "sum"}).first()[0]
+    check(f"{name} totals all {len(ROWS)} pickups", total == len(ROWS))
 check(
-    "grid cell 40.769/-73.9549 -> 40.76/-73.96",
-    first["cell_lat"] == Decimal("40.76")
-    and first["cell_lon"] == Decimal("-73.96")
-    and first["cell_id"] == "40.76_-73.96",
-)
-check(
-    "hour and date derived",
-    first["pickup_hour"] == 0 and str(first["pickup_date"]) == "2014-04-01",
-)
-check("padded base trimmed", valid.filter("base = 'B02764'").count() == 1)
-check("counts add up", valid.count() + rejected_rows(classified).count() == len(SAMPLE))
-rejected = rejected_rows(classified)
-check(
-    "rejected rows keep the original text",
-    dict(rejected.dtypes)["raw_lat"] == "string"
-    and rejected.filter("raw_lat = 'abc'").count() == 1
-    and rejected.filter("raw_base = 'X1'").count() == 1,
+    "published tables hold no exact time or coordinates",
+    all("pickup_ts" not in df.columns for df in tables.values()),
 )
 
 spark.stop()
-print("\nall tests passed" if failures == 0 else f"\n{failures} test(s) failed")
+print("\nall release tests passed" if failures == 0 else f"\n{failures} test(s) failed")
 sys.exit(1 if failures else 0)

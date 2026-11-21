@@ -1,4 +1,5 @@
 """Helpers shared by the PySpark jobs: storage client, JSON markers, Spark session."""
+
 import json
 import logging
 import os
@@ -14,8 +15,11 @@ STATE_BUCKET = "pipeline-state"
 
 
 def get_logger(name):
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout,
-                        format=f"%(asctime)s %(levelname)s {name} %(message)s")
+    logging.basicConfig(
+        level=logging.INFO,
+        stream=sys.stdout,
+        format=f"%(asctime)s %(levelname)s {name} %(message)s",
+    )
     return logging.getLogger(name)
 
 
@@ -30,8 +34,10 @@ def s3_client():
         aws_access_key_id=os.environ["S3_ACCESS_KEY"],
         aws_secret_access_key=os.environ["S3_SECRET_KEY"],
         region_name="us-east-1",
-        config=Config(s3={"addressing_style": "path"},
-                      retries={"max_attempts": 5, "mode": "standard"}),
+        config=Config(
+            s3={"addressing_style": "path"},
+            retries={"max_attempts": 5, "mode": "standard"},
+        ),
     )
 
 
@@ -45,8 +51,12 @@ def read_json(s3, bucket, key):
 
 
 def write_json(s3, bucket, key, data):
-    s3.put_object(Bucket=bucket, Key=key, ContentType="application/json",
-                  Body=json.dumps(data, indent=2).encode())
+    s3.put_object(
+        Bucket=bucket,
+        Key=key,
+        ContentType="application/json",
+        Body=json.dumps(data, indent=2).encode(),
+    )
 
 
 def delete_if_exists(s3, bucket, key):
@@ -59,9 +69,21 @@ def delete_if_exists(s3, bucket, key):
 
 def spark_session(app_name):
     from pyspark.sql import SparkSession
-    spark = (SparkSession.builder.appName(app_name)
-             .config("spark.hadoop.fs.s3a.access.key", os.environ["S3_ACCESS_KEY"])
-             .config("spark.hadoop.fs.s3a.secret.key", os.environ["S3_SECRET_KEY"])
-             .getOrCreate())
+
+    spark = (
+        SparkSession.builder.appName(app_name)
+        .config("spark.hadoop.fs.s3a.access.key", os.environ["S3_ACCESS_KEY"])
+        .config("spark.hadoop.fs.s3a.secret.key", os.environ["S3_SECRET_KEY"])
+        .getOrCreate()
+    )
     spark.sparkContext.setLogLevel("WARN")
     return spark
+
+
+def short_error(exc):
+    """The most useful single line of an error, for logs and summaries."""
+    lines = [l.strip() for l in str(exc).splitlines() if l.strip()]
+    for line in lines:
+        if "Exception" in line or "Error:" in line:
+            return line.lstrip(": ")[:200]
+    return (lines[0] if lines else type(exc).__name__)[:200]

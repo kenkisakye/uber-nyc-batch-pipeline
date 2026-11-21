@@ -29,6 +29,7 @@ from common import (
     get_logger,
     read_json,
     s3_client,
+    short_error,
     spark_session,
     utc_now,
     write_json,
@@ -259,15 +260,6 @@ def validate_month(spark, s3, month, force=False):
             log.exception("could not record the failure in pipeline-state")
         log.error("month=%s failed: %s", month, short_error(exc))
         raise
-
-
-def short_error(exc):
-    """The most useful single line of an error, for summaries."""
-    lines = [l.strip() for l in str(exc).splitlines() if l.strip()]
-    for line in lines:
-        if "Exception" in line or "Error:" in line:
-            return line.lstrip(": ")[:200]
-    return (lines[0] if lines else type(exc).__name__)[:200]
 
 
 def main():

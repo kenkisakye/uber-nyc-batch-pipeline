@@ -1,0 +1,25 @@
+2026-11-21 02:39:59,154 INFO release quarter=2014-Q2 run_id=88f69248e808 started
+2026-11-21 02:40:04,671 ERROR release quarter=2014-Q2 failed: simulated failure before the manifest was written (failure test)
+
+quarter  status        pickups  seconds  release                    outcome
+2014-Q2  failed              0        0                             simulated failure before the manifest was written (failure test)
+2026-11-21 02:40:04,794 INFO release Closing down clientserver connection
+Reading published releases with the forecasting app's read-only key
+
+2014-Q2: release 20261121T023301Z-96f9ae, months 2014-04, 2014-05, 2014-06
+PASS   demand_by_cell_hour: 279,785 rows, 1,880,791 pickups  (manifest says 1,880,791)
+PASS   demand_by_base_day: 455 rows, 1,880,791 pickups  (manifest says 1,880,791)
+  busiest grid cells: 40.75_-73.98 (103,364), 40.75_-73.99 (84,995), 40.72_-74.00 (83,596)
+
+2014-Q3: release 20261121T023303Z-646f30, months 2014-07, 2014-08, 2014-09
+PASS   demand_by_cell_hour: 387,537 rows, 2,653,532 pickups  (manifest says 2,653,532)
+PASS   demand_by_base_day: 460 rows, 2,653,532 pickups  (manifest says 2,653,532)
+  busiest grid cells: 40.75_-73.98 (121,822), 40.72_-74.00 (104,076), 40.75_-73.99 (102,843)
+
+Access checks for the read-only key
+PASS cannot write to published
+PASS cannot list raw
+PASS cannot read a raw file
+PASS cannot list quarantine
+
+All checks passed.
