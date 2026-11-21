@@ -147,6 +147,29 @@ services:
     mem_limit: 256m
     depends_on:
       s3: {condition: service_healthy}
+  
+    # On demand (later started by the scheduler): PySpark jobs.
+  #   docker compose run --rm spark test
+  #   docker compose run --rm spark validate --month 2014-04
+  spark:
+    <<: *common
+    profiles: [jobs]
+    build:
+      context: ./spark
+      args:
+        SPARK_IMAGE: ${SPARK_IMAGE:-apache/spark:4.2.0-scala2.13-java17-python3-ubuntu}
+    image: uber-pipeline/spark:1.0
+    restart: "no"
+    environment:
+      S3_ENDPOINT: http://s3:8333
+      S3_ACCESS_KEY: ${S3_SPARK_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SPARK_SECRET_KEY}
+      # Newer AWS SDKs add checksum headers by default; send them only when required
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+    mem_limit: 3g
+    depends_on:
+      s3: {condition: service_healthy}
 
   # On demand: verifies that each S3 identity has exactly its intended access
   access-check:
