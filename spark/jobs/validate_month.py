@@ -64,7 +64,12 @@ class ValidationError(Exception):
 
 
 def classify(raw: DataFrame, year: int, month: int) -> DataFrame:
-    """Adds typed columns and reject_reason (null when the row is valid)."""
+    """Adds typed columns and reject_reason (null when the row is valid).
+
+    The typed columns get new names (lat_num, lon_num, base_code) because
+    Spark column names are case-insensitive: "lat" would replace "Lat" and
+    the original text needed for the quarantine would be lost.
+    """
     ts = F.try_to_timestamp(F.col("Date/Time"), F.lit(TIMESTAMP_FORMAT))
     lat = F.trim(F.col("Lat")).try_cast("double")
     lon = F.trim(F.col("Lon")).try_cast("double")
@@ -81,17 +86,17 @@ def classify(raw: DataFrame, year: int, month: int) -> DataFrame:
     )
     return (
         raw.withColumn("pickup_ts", ts)
-        .withColumn("lat", lat)
-        .withColumn("lon", lon)
-        .withColumn("base", base)
+        .withColumn("lat_num", lat)
+        .withColumn("lon_num", lon)
+        .withColumn("base_code", base)
         .withColumn("reject_reason", reason)
     )
 
 
 def valid_rows(classified: DataFrame) -> DataFrame:
     """Valid rows with the coordinates reduced to a grid cell."""
-    cell_lat = (F.floor(F.col("lat") / GRID) * GRID).cast("decimal(6,2)")
-    cell_lon = (F.floor(F.col("lon") / GRID) * GRID).cast("decimal(7,2)")
+    cell_lat = (F.floor(F.col("lat_num") / GRID) * GRID).cast("decimal(6,2)")
+    cell_lon = (F.floor(F.col("lon_num") / GRID) * GRID).cast("decimal(7,2)")
     return classified.filter(F.col("reject_reason").isNull()).select(
         F.col("pickup_ts"),
         F.to_date("pickup_ts").alias("pickup_date"),
@@ -102,7 +107,7 @@ def valid_rows(classified: DataFrame) -> DataFrame:
         F.concat_ws("_", cell_lat.cast("string"), cell_lon.cast("string")).alias(
             "cell_id"
         ),
-        F.col("base"),
+        F.col("base_code").alias("base"),
     )
 
 
