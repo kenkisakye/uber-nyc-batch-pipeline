@@ -1,0 +1,2 @@
+# Used for small JSON markers and run state; Spark itself reads and writes the data
+boto3~=1.35.0
